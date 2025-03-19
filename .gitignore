@@ -20,3 +20,5 @@ dist
 .gitattributes
 setup.cfg
 run_test
+
+deeparg_env
