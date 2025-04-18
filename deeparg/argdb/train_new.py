@@ -62,7 +62,7 @@ def train(dtpath='../../data', version='new',
           mdprefix = 'model/v1/metadata_',
           mode='LS',
           process=True):
-    os.system("mkdir -p "+dtpath+"/"+version)
+    os.system("mkdir -p "+dtpath+"/model/"+version)
     
     print('fetching alignments')
 
