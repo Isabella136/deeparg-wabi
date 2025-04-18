@@ -8,13 +8,20 @@ import make_XY
 import os
 import json
 
-# TODO: test this
-def process_alignments(alignments, mdfile):
+# convert alignments.tsv.json and metadata_LS.pkl to usable alignments dictionary
+def process_alignments(alignments, mdfile, ids_to_drop=None):
+    try:
+        ids_to_drop = set(ids_to_drop)
+    except:
+        ids_to_drop = set()
+
     # make dictionary mapping IDs to full features string
     mds = cPickle.load(open(mdfile))
     id2md = dict()
     for md in mds['features']:
-        id2md[md.split('|', 1)[0]] = md
+        id = md.split('|', 1)[0]
+        if id not in ids_to_drop:
+            id2md[id] = md
 
     print('ids:', len(id2md.keys()))
     
@@ -61,7 +68,8 @@ def train(dtpath='../../data', version='new',
           algnfile = 'scripts/db/alignment.tsv.json',
           mdprefix = 'model/v1/metadata_',
           mode='LS',
-          process=True):
+          process=True,
+          ids_to_drop=None):
     os.system("mkdir -p "+dtpath+"/model/"+version)
     
     print('fetching alignments')
@@ -71,7 +79,7 @@ def train(dtpath='../../data', version='new',
 
     if process:
         mdfile = os.path.join(dtpath, mdprefix + mode + '.pkl')
-        alignments = process_alignments(alignments, mdfile)
+        alignments = process_alignments(alignments, mdfile, ids_to_drop)
 
     print('making dataset')
 
