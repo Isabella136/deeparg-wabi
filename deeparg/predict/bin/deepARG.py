@@ -18,7 +18,7 @@ from nolearn.lasagne import NeuralNet
 
 import theano
 
-from deeparg.predict.bin import process_blast
+import process_blast
 import cPickle
 # import options as opt
 from deeparg.predict.bin.model import model
@@ -153,7 +153,7 @@ def process(fin, fon, iden, version, evalue, prob, minCoverage, pipeline, versio
         # 1 Get the alignments for that sample
         x_align = align[i[0]]
         # 2 Get only the alignments with the predicted label
-        x_align = {o: x_align[o] for o in x_align.keys() if "|"+i[1]+"|" in o}
+        x_align = {o: x_align[o] for o in x_align.keys()}# if "|"+i[1]+"|" in o}
         # 3 Compute the best Hit
 
         if x_align:
@@ -207,7 +207,7 @@ def process(fin, fon, iden, version, evalue, prob, minCoverage, pipeline, versio
                 BH[i[0]][2][9],  # alignment gene end
                 i[0],  # read-id
                 i[1],  # predicted type
-                "undefined",  # best hit
+                x_bh,#"undefined",  # best hit
                 str(i[2]),  # probability
                 BH[i[0]][2][2],  # identity
                 BH[i[0]][2][3],  # alignment length

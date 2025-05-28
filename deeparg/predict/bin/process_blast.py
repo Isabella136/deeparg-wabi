@@ -68,6 +68,6 @@ def make_alignments_json(fname, iden=50, eval=1e-5, coverage=0.8, BitScore=True,
         except:
             pass
 
-    #json.dump(alignments, open(fname+".BitScoreMatrix.json",'w'))
+    json.dump(alignments, open(fname+".BitScoreMatrix.json",'w'))
     print(len(alignments), " reads passed the filters and ready for prediction")
     return [alignments, BHit]

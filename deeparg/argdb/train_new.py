@@ -8,6 +8,8 @@ import make_XY
 import os
 import json
 
+from lasagne.random import get_rng
+
 # convert alignments.tsv.json and metadata_LS.pkl to usable alignments dictionary
 def process_alignments(alignments, mdfile, ids_to_drop=None):
     try:
@@ -16,12 +18,20 @@ def process_alignments(alignments, mdfile, ids_to_drop=None):
         ids_to_drop = set()
 
     # make dictionary mapping IDs to full features string
+    id2md = dict()
+    with open(mdfile) as f:
+        for line in f:
+            md = line.split(' ')[0]
+            id = md.split('|', 1)[0]
+            if id not in ids_to_drop:
+                id2md[id] = md
+    """
     mds = cPickle.load(open(mdfile))
     id2md = dict()
     for md in mds['features']:
         id = md.split('|', 1)[0]
         if id not in ids_to_drop:
-            id2md[id] = md
+            id2md[id] = md"""
 
     print('ids:', len(id2md.keys()))
     
@@ -66,10 +76,11 @@ def process_alignments(alignments, mdfile, ids_to_drop=None):
 # run training and save model
 def train(dtpath='../../data', version='new', 
           algnfile = 'scripts/db/alignment.tsv.json',
-          mdprefix = 'model/v1/metadata_',
+          mdprefix = 'database/v1/features.gene.length',#'model/v1/metadata_',
           mode='LS',
           process=True,
-          ids_to_drop=None):
+          ids_to_drop=None,
+          seed=0):
     os.system("mkdir -p "+dtpath+"/model/"+version)
     
     print('fetching alignments')
@@ -78,12 +89,15 @@ def train(dtpath='../../data', version='new',
     alignments = json.load(open(algnpath))
 
     if process:
-        mdfile = os.path.join(dtpath, mdprefix + mode + '.pkl')
+        mdfile = os.path.join(dtpath, mdprefix)# + mode + '.pkl')
         alignments = process_alignments(alignments, mdfile, ids_to_drop)
 
     print('making dataset')
 
     data = make_XY.make_xy2(alignments)
+
+    print('training with random seed', seed)
+    get_rng().seed(seed)
 
     deepL = train_deepARG.main(data)
 
