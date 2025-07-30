@@ -22,3 +22,6 @@ setup.cfg
 run_test
 
 deeparg_env
+real_data_test/SAM*/*
+real_data_test/log*
+test/X*
