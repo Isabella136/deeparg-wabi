@@ -18,13 +18,16 @@ running_jobs=0
 
 eval "$(conda shell.bash hook)"
 conda activate ../../deeparg/deeparg_env/
+module load prodigal
 
 cd ../
 mapfile -t biosamples < real_data_test/real_samples.txt
 
 for biosample in "${biosamples[@]}"; do
-    fasta=$(ls ./real_data_test/$biosample/spades/contigs.fasta)
-    echo $fasta
+    echo $biosample
+    contig=./real_data_test/$biosample/spades/contigs.fasta
+    orf=./real_data_test/$biosample/spades/orf.fasta
+    prodigal -i $contig -o ./real_data_test/$biosample/spades/orf.gbk -d $orf &> "./real_data_test/$biosample/spades/orf.log"
     mkdir -p ./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_30
     mkdir -p ./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_50
     mkdir -p ./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_80
@@ -35,7 +38,7 @@ for biosample in "${biosamples[@]}"; do
             --error=./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_30/log.err bash -c \
             "deeparg predict \
                 --model LS \
-                -i $fasta \
+                -i $orf \
                 -o ./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_30/X \
                 -d data/ \
                 --type nucl \
@@ -57,7 +60,7 @@ for biosample in "${biosamples[@]}"; do
             --error=./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_50/log.err bash -c \
             "deeparg predict \
                 --model LS \
-                -i $fasta \
+                -i $orf \
                 -o ./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_50/X \
                 -d data/ \
                 --type nucl \
@@ -78,7 +81,7 @@ for biosample in "${biosamples[@]}"; do
             --error=./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_80/log.err bash -c \
             "deeparg predict \
                 --model LS \
-                -i $fasta \
+                -i $orf \
                 -o ./real_data_test/$biosample/spades/deeparg_results/arg_alignment_identity_80/X \
                 -d data/ \
                 --type nucl \

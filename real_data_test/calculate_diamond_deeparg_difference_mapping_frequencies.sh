@@ -1,22 +1,19 @@
 #!/bin/bash
 
-check_mapping="../../../../test/check_mapping.py"
-summarize="../../summarize_deeparg_ls_mapping_differences.py"
+calculate_mapping_frequencies="../../../calculate_mapping_frequencies.py"
 mapfile -t biosamples < ./real_samples.txt
 for biosample in "${biosamples[@]}"; do
     cd $biosample/deeparg_results/arg_alignment_identity_30
-    python $check_mapping
+    python $calculate_mapping_frequencies
     cd ../arg_alignment_identity_50
-    python $check_mapping
+    python $calculate_mapping_frequencies
     cd ../arg_alignment_identity_80
-    python $check_mapping
+    python $calculate_mapping_frequencies
     cd ../../spades/deeparg_results/arg_alignment_identity_30
-    python ../$check_mapping
+    python ../$calculate_mapping_frequencies
     cd ../arg_alignment_identity_50
-    python ../$check_mapping
+    python ../$calculate_mapping_frequencies
     cd ../arg_alignment_identity_80
-    python ../$check_mapping
-    cd ../../
-    python $summarize
-    cd ../../
+    python ../$calculate_mapping_frequencies
+    cd ../../../../
 done

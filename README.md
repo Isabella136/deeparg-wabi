@@ -123,6 +123,9 @@ In this example, we will classify a set of ORFs from a set of assembled contigs.
         --arg-alignment-evalue 1e-10 \
         --arg-num-alignments-per-entry 1000
 
+### daa.tsv Output Headers
+Query, Gene, Identity, Alignment Length, Mismatches, Gaps, Query Alignment Start, Query Alignment End, Gene Alignment Start, Gene Alignment End, E-value, Bit Score.
+
 ### Usage
 
     usage: deeparg predict 
