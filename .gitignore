@@ -23,5 +23,6 @@ run_test
 
 deeparg_env
 real_data_test/SAM*/*
-real_data_test/log*
+*log*
 test/X*
+test/*difference.tsv

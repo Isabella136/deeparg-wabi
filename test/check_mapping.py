@@ -1,25 +1,57 @@
 from collections import Counter
-fn = './X.mapping.ARG'
+mapping_file = './X.mapping.ARG'
+alignment_file = './X.align.daa.tsv'
 
-misses = 0
-total = 0
-c = Counter()
-for i, line in enumerate(open(fn)):
+any_label_best_hit = dict()
+
+last_read = ''
+for line in open(alignment_file):
     fields = line.strip().split('\t')
-    if fields[0] == '#ARG':
-        print('line#\t' + line.strip())
+    if fields[0] == last_read:
         continue
-    total += 1
+    
+    read = fields[0]
+    best = fields[1]
+    
 
-    pred = fields[4]
-    best = fields[5]
-    best = best.split('|')[3]
+    any_label_best_hit.update({read: best})
 
-    c[best] += 1
+    last_read = read
 
-    if best != pred: 
-        print(str(i) + '\t' + line.strip())
-        misses += 1
 
-print("misses: {}/{}".format(misses, total))
-print(c)
+amr_misses = 0
+arg_misses = 0
+total = 0
+pred_c = Counter()
+best_c = Counter()
+
+with open('AMR_category_difference.tsv', 'w') as amr_output:
+    with open('ARG_category_difference.tsv', 'w') as arg_output:
+        for i, line in enumerate(open(mapping_file)):
+            fields = line.strip().split('\t')
+            if fields[0] == '#ARG':
+                amr_output.write('line#\tbest hit\t' + line.strip() + '\n')
+                arg_output.write('line#\tbest hit\t' + line.strip() + '\n')
+                continue
+            total += 1
+
+            pred_arg = fields[0]
+            pred_amr = fields[4]
+            read = fields[3]
+
+            best_arg = any_label_best_hit[read].split('|')[-1].upper()
+            best_amr = any_label_best_hit[read].split('|')[-2]
+
+            pred_c[pred_amr] += 1
+            best_c[best_amr] += 1
+
+            if pred_amr != best_amr: 
+                amr_output.write(str(i) + '\t' + any_label_best_hit[read] + '\t' + line.strip() + '\n')
+                amr_misses += 1
+            if pred_arg != best_arg: 
+                arg_output.write(str(i) + '\t' + any_label_best_hit[read] + '\t' + line.strip() + '\n')
+                arg_misses += 1
+        amr_output.write("misses: {}/{}".format(amr_misses, total) + '\n')
+        arg_output.write("misses: {}/{}".format(arg_misses, total))
+        amr_output.write("Predicted: {}".format(pred_c) + '\n')
+        amr_output.write("Best-hit: {}".format(best_c))

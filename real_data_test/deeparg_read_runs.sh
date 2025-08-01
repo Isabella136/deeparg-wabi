@@ -1,15 +1,16 @@
 #!/bin/bash
 
-#SBATCH --job-name=deeparg
-#SBATCH --output=log.out
-#SBATCH --error=log.err
+#SBATCH --job-name=deeparg_read
+#SBATCH --output=deeparg_read_log.out
+#SBATCH --error=deeparg_read_log.err
 #SBATCH --time=12:00:00
 #SBATCH --account=cbcb
 #SBATCH --partition=cbcb
 #SBATCH --qos=highmem
 #SBATCH --nodes=10
-#SBATCH --ntasks=80
-#SBATCH --ntasks-per-node=8
+#SBATCH --ntasks=10
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=8
 #SBATCH --mem=128g
 
 MAX_JOBS=10
@@ -22,7 +23,7 @@ cd ../
 mapfile -t biosamples < real_data_test/real_samples.txt
 
 for biosample in "${biosamples[@]}"; do
-    fasta=$(ls ./real_data_test/$biosample/*.fasta)
+    fasta=$(ls ./real_data_test/$biosample/*_interleaved.quality_trimmed.fasta)
     echo $fasta
     mkdir -p ./real_data_test/$biosample/deeparg_results/arg_alignment_identity_30
     mkdir -p ./real_data_test/$biosample/deeparg_results/arg_alignment_identity_50

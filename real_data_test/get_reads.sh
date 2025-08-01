@@ -8,6 +8,6 @@ while IFS= read -r biosample; do
     echo $srr;
     mkdir -p $biosample;
     cd $biosample;
-    fasterq-dump --fasta $srr;
+    fasterq-dump $srr;
     cd ..;
 done < real_samples.txt
