@@ -1,7 +1,8 @@
 #!/bin/bash
 
 check_mapping="../../../../test/check_mapping.py"
-summarize="../../summarize_deeparg_ls_mapping_differences.py"
+summarize_ls="../../summarize_deeparg_ls_mapping_differences.py"
+summarize_ss="../summarize_deeparg_ss_mapping_differences.py"
 mapfile -t biosamples < ./real_samples.txt
 for biosample in "${biosamples[@]}"; do
     cd $biosample/deeparg_results/arg_alignment_identity_30
@@ -17,6 +18,8 @@ for biosample in "${biosamples[@]}"; do
     cd ../arg_alignment_identity_80
     python ../$check_mapping
     cd ../../
-    python $summarize
-    cd ../../
+    python $summarize_ls
+    cd ../
+    python $summarize_ss
+    cd ../
 done

@@ -8,13 +8,16 @@ last_read = ''
 for line in open(alignment_file):
     fields = line.strip().split('\t')
     if fields[0] == last_read:
+        read = fields[0]
+        best = fields[1]
+        if any_label_best_hit[read][1] < float(fields[-1]):
+            any_label_best_hit[read] = (best, float(fields[-1]))
         continue
     
     read = fields[0]
     best = fields[1]
     
-
-    any_label_best_hit.update({read: best})
+    any_label_best_hit.update({read: (best, float(fields[-1]))})
 
     last_read = read
 
@@ -39,17 +42,17 @@ with open('AMR_category_difference.tsv', 'w') as amr_output:
             pred_amr = fields[4]
             read = fields[3]
 
-            best_arg = any_label_best_hit[read].split('|')[-1].upper()
-            best_amr = any_label_best_hit[read].split('|')[-2]
+            best_arg = any_label_best_hit[read][0].split('|')[-1].upper()
+            best_amr = any_label_best_hit[read][0].split('|')[-2]
 
             pred_c[pred_amr] += 1
             best_c[best_amr] += 1
 
             if pred_amr != best_amr: 
-                amr_output.write(str(i) + '\t' + any_label_best_hit[read] + '\t' + line.strip() + '\n')
+                amr_output.write(str(i) + '\t' + any_label_best_hit[read][0] + '\t' + line.strip() + '\n')
                 amr_misses += 1
             if pred_arg != best_arg: 
-                arg_output.write(str(i) + '\t' + any_label_best_hit[read] + '\t' + line.strip() + '\n')
+                arg_output.write(str(i) + '\t' + any_label_best_hit[read][0] + '\t' + line.strip() + '\n')
                 arg_misses += 1
         amr_output.write("misses: {}/{}".format(amr_misses, total) + '\n')
         arg_output.write("misses: {}/{}".format(arg_misses, total))
